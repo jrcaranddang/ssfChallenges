@@ -65,36 +65,127 @@ MongoClient.connect(url, function(err, db) {
         var studentsResult3 = '';
 
         StudentsCursor.each(function(err, doc) {
-            if (err) console.log(err);
+            if (err) {
+                console.log(err);
+            }
             else {
                 if (doc) {
-                    console.log(doc);
-                    studentsResult;
+                    // console.log(doc);
+                    studentsResult += doc.name + "\n";
                     studentsResult2 += doc.name + "\n\t" +
                         "hobby1: " + doc.hobby1 + "\n\t" +
                         "hobby2: " + doc.hobby2 + "\n\t" +
                         "hobby3: " + doc.hobby3 + "\n";
                 }
                 else {
-                    console.log(studentsResult, studentsResult2);
+                    console.log(studentsResult);
+                    console.log(studentsResult2);
                 }
             }
         });
 
 
-        var StudentsAggCursor = Students.aggregate([{
-            $group: {
-                _id: {
-                    hobby1: "$hobby1"
+        var StudentsAggCursor = Students.aggregate([
+            {
+                $group: {
+                    _id: {
+                        hobby1: "$hobby1",
+                        // hobby2: "$hobby2",
+                        // hobby3: "$hobby3",
+                    },
+                    name: {
+                        $push: {
+                            name: "$name"
+                        }
+                    }
                 }
-            }
-        }]);
+            },
+        ]);
+
+        var StudentsAggCursor2 = Students.aggregate([
+            {
+                $group: {
+                    _id: {
+                        // hobby1: "$hobby1",
+                        hobby2: "$hobby2",
+                        // hobby3: "$hobby3",
+                    },
+                    name: {
+                        $push: {
+                            name: "$name"
+                        }
+                    }
+                }
+            },
+        ]);
+
+        var StudentsAggCursor3 = Students.aggregate([
+            {
+                $group: {
+                    _id: {
+                        // hobby1: "$hobby1",
+                        // hobby2: "$hobby2",
+                        hobby3: "$hobby3",
+                    },
+                    name: {
+                        $push: {
+                            name: "$name"
+                        }
+                    }
+                }
+            },
+        ]);
 
         StudentsAggCursor.each(function(err, doc) {
-            if (err) console.log(err)
+            if (err) {
+                console.log(err);
+            }
             else {
                 if (doc) {
-                    console.log("agg doc", doc);
+                    // console.log("agg doc", doc);
+                    studentsResult3 += "Students who share a hobby of " + doc._id.hobby1 + " include:\n";
+                    
+                    for (var i = 0; i < doc.name.length; i++) {
+                        studentsResult3 += doc.name[i].name + "\n";
+                    }
+                }
+                else {
+                    // console.log(studentsResult3);
+                }
+            }
+        });
+
+        StudentsAggCursor2.each(function(err, doc) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                if (doc) {
+                    // console.log("agg doc2", doc);
+                    studentsResult3 += "Students who share a hobby of " + doc._id.hobby2 + " include:\n";
+                    
+                    for (var i = 0; i < doc.name.length; i++) {
+                        studentsResult3 += doc.name[i].name + "\n";
+                    }
+                }
+                else {
+                    // console.log(studentsResult3);
+                }
+            }
+        });
+
+        StudentsAggCursor3.each(function(err, doc) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                if (doc) {
+                    // console.log("agg doc3", doc);
+                    studentsResult3 += "Students who share a hobby of " + doc._id.hobby3 + " include:\n";
+                    
+                    for (var i = 0; i < doc.name.length; i++) {
+                        studentsResult3 += doc.name[i].name + "\n";
+                    }
                 }
                 else {
                     console.log(studentsResult3);
